@@ -1,6 +1,7 @@
 # React-Todo-app
 
 The task was to create a todo app.
+The main goal is to learn React components events and Reusable React components.
 
 Tasks:
 
