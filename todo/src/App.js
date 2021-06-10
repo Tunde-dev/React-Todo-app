@@ -16,6 +16,8 @@ function App() {
     },
   ]);
 
+  const [cards, setCards] = useState([]);
+
   const addDashboardHandler = (e) => {
     e.preventDefault();
     setDashboards([
@@ -35,6 +37,8 @@ function App() {
             dashboard={dashboard}
             dashboards={dashboards}
             setDashboards={setDashboards}
+            cards={cards} 
+            setCards={setCards}
           />
         ))}
 

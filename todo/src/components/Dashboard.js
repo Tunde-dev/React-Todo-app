@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash, faPlus } from "@fortawesome/free-solid-svg-icons";
+import Card from "./Card";
 
 const Dashboard = ({
   dashboard,
@@ -25,7 +26,14 @@ const Dashboard = ({
       },
     ]);
   };
-
+  // Get cards for specific dashboard
+  const returnCardsForDashboard = (dashboard) => {
+    return cards
+      .filter((card) => card.dashboard === dashboard)
+      .map((card) => (
+        <Card key={card.id} card={card} cards={cards} setCards={setCards} />
+      ));
+  };
   const updateDashboardTitle = (e) => {
     setNewName(e.target.value);
   };
@@ -69,6 +77,7 @@ const Dashboard = ({
           />
         </button>
       </div>
+      {returnCardsForDashboard(dashboard.id)}
     </div>
   );
 };
