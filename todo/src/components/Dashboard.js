@@ -57,8 +57,8 @@ const Dashboard = ({
   };
 
   return (
-    <div className="dashboard">
-      <div className="dashboard-title-wrapper">
+    <div className="dashboard d-flex coloumn">
+      <div className="dashboard-title-wrapper d-flex">
         <div onClick={(e) => setEditable(true)} className="editable-area">
           {isEditable ? editTemplate : viewTemplate}
         </div>
