@@ -2,6 +2,7 @@ import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash, faPlus } from "@fortawesome/free-solid-svg-icons";
 import Card from "./Card";
+import { useDrop } from "react-dnd";
 
 const Dashboard = ({
   dashboard,
@@ -11,6 +12,11 @@ const Dashboard = ({
   cards,
   setCards,
 }) => {
+  const [, drop] = useDrop({
+    accept: "Our first type",
+    drop: () => ({ name: dashboard.id }),
+  });
+
   const [isEditable, setEditable] = useState(false);
 
   const [newName, setNewName] = useState(name);
@@ -57,7 +63,7 @@ const Dashboard = ({
   };
 
   return (
-    <div className="dashboard d-flex coloumn">
+    <div ref={drop} className="dashboard d-flex coloumn">
       <div className="dashboard-title-wrapper d-flex">
         <div onClick={(e) => setEditable(true)} className="editable-area">
           {isEditable ? editTemplate : viewTemplate}

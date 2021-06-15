@@ -1,120 +1,121 @@
-import { useState } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faCaretDown,
-  faTrash,
-  faClone,
-} from "@fortawesome/free-solid-svg-icons";
+import React, { useState } from "react";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCaretDown, faTrash, faClone } from '@fortawesome/free-solid-svg-icons';
+import { useDrag } from "react-dnd";
 
-const Card = ({ card, cards, setCards }) => {
-  const [isEditableTask, setEditableTask] = useState(false);
+const Card = ({card, cards, setCards}) => {
 
-  const updateTaskTitle = (e) => {
-    setCards(
-      cards.map((el) => {
-        return {
-          ...el,
-          name: el.id === card.id ? e.target.value : el.name,
-        };
-      })
+    const changeCardDashboard = (currentItemId, dashboardId) => {
+        setCards(
+            cards.map(card => {
+                return {
+                    ...card,
+                    dashboard: card.id === currentItemId ? dashboardId : card.dashboard
+                }
+            })
+        );
+    }
+
+    const [{isDragging}, drag] = useDrag({
+        type: 'Our first type',
+        item: {name: card.id, type: 'Our first type'},
+        end: (item, monitor) => {
+            const dropResult = monitor.getDropResult();
+            if (dropResult) {
+                changeCardDashboard(item.name, dropResult.name)
+            }
+        },
+        collect: monitor => ({
+            isDragging: monitor.isDragging(),
+        })
+    });
+
+    const opacity = isDragging ? 0.4 : 1;
+
+    const [isEditableTask, setEditableTask] = useState(false);
+
+    const updateTaskTitle = (e) => {
+        setCards(
+            cards.map(el => {
+                return {
+                    ...el,
+                    name: el.id === card.id ? e.target.value : el.name
+                }
+            })
+        );
+    }
+
+    const viewTemplateTask = (
+        <h3>{card.name}</h3>
     );
-  };
 
-  const viewTemplateTask = <h3>{card.name}</h3>;
-
-  const editTemplateTask = (
-    <input
-      type="text"
-      autoFocus
-      value={card.name}
-      onChange={updateTaskTitle}
-      onBlur={(e) => setEditableTask(false)}
-      onFocus={(e) => e.target.select()}
-    />
-  );
-
-  // Descripson -------------------------------------------------------------------------------------------------------
-  const [isEditableDescripson, setEditableDescripson] = useState(false);
-
-  const updateTaskDescripson = (e) => {
-    setCards(
-      cards.map((elem) => {
-        return {
-          ...elem,
-          description: elem.id === card.id ? e.target.value : elem.description,
-        };
-      })
+    const editTemplateTask = (
+        <input type="text" autoFocus value={card.name} onChange={updateTaskTitle} onBlur={e => setEditableTask(false)} onFocus={e => e.target.select()} />
     );
-  };
 
-  const editTemplateDescripson = (
-    <textarea
-      rows="6"
-      autoFocus
-      value={card.description}
-      onChange={updateTaskDescripson}
-      onBlur={(e) => setEditableDescripson(false)}
-      onFocus={(e) => e.target.select()}
-    ></textarea>
-  );
+    // Descripson -------------------------------------------------------------------------------------------------------
+    const [isEditableDescripson, setEditableDescripson] = useState(false);
 
-  //------Descripson--Lathatosag--------------------------------------------------------------------
-  const [isActive, setActive] = useState(false);
+    const updateTaskDescripson = (e) => {
+        setCards(
+            cards.map(elem => {
+                return {
+                    ...elem,
+                    description: elem.id === card.id ? e.target.value : elem.description
+                }
+            })
+        );
+    }
 
-  const handlerToggle = () => {
-    setActive(!isActive);
-  };
 
-  //-------------Delete--------------------------------------------------------------------------------
+    const editTemplateDescripson = (
+        <textarea rows="6" autoFocus value={card.description} onChange={updateTaskDescripson} onBlur={e => setEditableDescripson(false)} onFocus={e => e.target.select()}></textarea>
+    );
 
-  const deleteHandler = () => {
-    setCards(cards.filter((element) => element.id !== card.id));
-  };
-  //----------------------------------------------------------------------------------------------------
+    //------Descripson--Lathatosag--------------------------------------------------------------------
+    const [isActive, setActive] = useState(false);
 
-  //-------------Clone--------------------------------------------------------------------------------
+    const handlerToggle = () => {
+        setActive(!isActive);
+    }
 
-  const cloneHandler = () => {
-    setCards([
-      ...cards,
-      {
-        ...card,
-        id: cards.length + 1,
-      },
-    ]);
-  };
-  //----------------------------------------------------------------------------------------------------
+    //-------------Delete--------------------------------------------------------------------------------
 
-  return (
-    <div className="card">
-      <div className="d-flex space-between align-center">
-        <div
-          className="card-title-wrapper"
-          onClick={(e) => setEditableTask(true)}
-        >
-          {isEditableTask ? editTemplateTask : viewTemplateTask}
+    const deleteHandler = () => {
+        setCards(cards.filter((element) => element.id !== card.id));
+    }
+    //----------------------------------------------------------------------------------------------------
+
+    //-------------Clone--------------------------------------------------------------------------------
+
+    const cloneHandler = () => {
+        setCards([
+            ...cards, 
+            {
+                ...card,
+                id: cards.length + 1
+            }
+        ]);
+    }
+    //----------------------------------------------------------------------------------------------------
+
+    return (
+        <div className="card" ref={drag} style={{opacity}}>
+            <div className="d-flex space-between align-center" >
+                <div className="card-title-wrapper" onClick={e => setEditableTask(true)}>
+                    {isEditableTask ? editTemplateTask : viewTemplateTask}
+                </div>
+                <button className="action-button" onClick={cloneHandler}>
+                    <FontAwesomeIcon  icon={faClone} />
+                </button>
+                <button className="action-button" onClick={deleteHandler}>
+                    <FontAwesomeIcon  icon={faTrash} />
+                </button>
+            </div>     
+            <FontAwesomeIcon icon={faCaretDown} onClick={handlerToggle} className="toggleIcon" />                
+            <p className={isActive ? "visible" : "hidden"} onClick={e => setEditableDescripson(true)}> {isEditableDescripson ? editTemplateDescripson : card.description}</p>
         </div>
-        <button className="action-button" onClick={cloneHandler}>
-          <FontAwesomeIcon icon={faClone} />
-        </button>
-        <button className="action-button" onClick={deleteHandler}>
-          <FontAwesomeIcon icon={faTrash} />
-        </button>
-      </div>
-      <FontAwesomeIcon
-        icon={faCaretDown}
-        onClick={handlerToggle}
-        className="toggleIcon"
-      />
-      <p
-        className={isActive ? "visible" : "hidden"}
-        onClick={(e) => setEditableDescripson(true)}
-      >
-        {" "}
-        {isEditableDescripson ? editTemplateDescripson : card.description}
-      </p>
-    </div>
-  );
-};
+    )
+}
 
 export default Card;
